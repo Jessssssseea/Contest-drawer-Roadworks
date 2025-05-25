@@ -1,2 +1,49 @@
-# Contest-drawer-Roadworks
-第二十五届广东省青少年机器人比赛道路工程项目的抽签系统，支持所有组别。The ballot system for road engineering projects of the 25th Guangdong Youth Robot Competition supports all categories.
+# Contest-drawer-Roadworks 道路工程抽签系统
+
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
+## 简介
+道路工程抽签系统是第二十五届广东省青少年机器人比赛道路工程项目的抽签系统，一个基于Python和Tkinter库开发的桌面应用程序，用于模拟道路工程比赛中的抽签过程。用户可以选择不同的组别（小学、初中、高中），然后进行抽签，系统会随机分配四个不同的任务到不同的工程点和区域，并在界面上显示抽签结果。此外，用户还可以重置系统和将抽签结果导出到桌面的文本文件中。
+
+## 功能特点
+1. **组别选择**：支持小学、初中、高中三个组别的抽签。
+2. **抽签功能**：随机分配四个任务（物料回收、建设服务区、搭建桥梁、建设加油站）到不同的工程点和区域。
+3. **可视化展示**：使用Tkinter的Canvas组件绘制基础地图和抽签结果标记。
+4. **任务详情**：在右侧面板显示任务的详细信息，包括任务名称、工程点、区域和具体要求。
+5. **重置系统**：清除当前的抽签结果，恢复到初始状态。
+6. **结果导出**：将抽签结果导出到桌面的文本文件中。
+
+## 安装与运行
+### 环境要求
+- Python 3.x
+- 无需额外安装第三方库，使用Python标准库即可运行。
+
+### 运行步骤
+1. 确保你已经安装了Python 3.x。
+2. 将`main.py`和`icon.ico`文件放在同一目录下。
+3. 打开命令行终端，切换到文件所在的目录。
+4. 运行以下命令启动程序：
+```bash
+python main.py
+```
+
+## 使用方法
+1. **启动程序**：运行`main.py`文件后，程序会弹出一个窗口。
+2. **选择组别**：在控制面板的下拉菜单中选择要进行抽签的组别（小学、初中、高中）。
+3. **开始抽签**：点击“开始抽签”按钮，系统会随机分配任务并在界面上显示结果。
+4. **查看结果**：左侧地图会显示各个任务的位置标记，右侧表格和文本区域会显示任务的详细信息。
+5. **重置系统**：如果需要重新进行抽签，可以点击“重置系统”按钮清除当前结果。
+6. **导出结果**：点击“导出结果”按钮，系统会将抽签结果保存到桌面的`抽签结果.txt`文件中，并自动打开该文件。
+
+## 代码结构
+- `main.py`：主程序文件，包含`RoadCompetitionDrawSystem`类，负责创建界面和实现抽签功能。
+- `icon.ico`：程序的图标文件。
+
+## 注意事项
+- 确保`icon.ico`文件与`main.py`文件在同一目录下，否则程序可能无法正常显示图标。
+- 导出的结果文件会覆盖桌面上已有的`抽签结果.txt`文件，请谨慎操作。
+
+## 贡献
+如果你发现任何问题或有改进建议，请在GitHub上提交[issue](https://github.com/Jessssssseea/Contest-drawer-Roadworks/issues)或[pull request](https://github.com/Jessssssseea/Contest-drawer-Roadworks/pulls)。
+
+## 许可证
+本项目采用MIT许可证，详见[`LICENSE`](https://github.com/Jessssssseea/Contest-drawer-Roadworks/blob/main/LICENSE)文件。
