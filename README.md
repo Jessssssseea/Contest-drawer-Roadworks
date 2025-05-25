@@ -1,6 +1,6 @@
 # Contest-drawer-Roadworks 道路工程抽签系统
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.md)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ## 简介
 道路工程抽签系统是第二十五届广东省青少年机器人比赛道路工程项目的抽签系统，一个基于Python和Tkinter库开发的桌面应用程序，用于模拟道路工程比赛中的抽签过程。用户可以选择不同的组别（小学、初中、高中），然后进行抽签，系统会随机分配四个不同的任务到不同的工程点和区域，并在界面上显示抽签结果。此外，用户还可以重置系统和将抽签结果导出到桌面的文本文件中。
 
