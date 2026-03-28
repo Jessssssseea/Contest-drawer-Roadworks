@@ -22,7 +22,7 @@ with open(ico_path, 'wb') as f:
     f.write(ico_data)
 import atexit
 
-# ==================== 可配置的坐标常量（基于原始地图图片像素坐标） ====================
+# ==================== 坐标常量 ====================
 PROJECT_POS = {
     1: (1300, 3900),   # 工程1
     2: (1140, 640),    # 工程2
@@ -63,9 +63,9 @@ class MapGraphicsView(QGraphicsView):
     BOX_WIDTH = 1000
     BOX_HEIGHT = 600
     SMALL_SQUARE_SIZE = 250
-    FIXED_CIRCLE_SIZE = 240          # 增大固定任务圆点
-    MARKER_SIZE = 240                # 增大动态标记圆点
-    SMALL_MARKER_SIZE = 230          # 增大叠放区域小圆点
+    FIXED_CIRCLE_SIZE = 240
+    MARKER_SIZE = 240
+    SMALL_MARKER_SIZE = 230
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -88,13 +88,8 @@ class MapGraphicsView(QGraphicsView):
         self.draw_static_elements()
 
     def calculate_zone_offsets(self):
-        """根据矩形尺寸和小方格尺寸，计算四个小方格中心相对于工程点中心的偏移量，使其在底部水平排列"""
         half_small = self.SMALL_SQUARE_SIZE / 2
-        # 矩形底部 Y 坐标 = cy + BOX_HEIGHT/2
-        # 小方格中心 Y = 矩形底部 - half_small
         center_y = self.BOX_HEIGHT / 2 - half_small
-        # 四个小方格中心 X 偏移（水平均匀分布，总宽度为 BOX_WIDTH）
-        # 每个方格宽 SMALL_SQUARE_SIZE，四个方格紧贴排列，总宽正好等于 BOX_WIDTH
         start_x = -self.BOX_WIDTH / 2 + half_small
         self.ZONE_OFFSETS = [
             (start_x + 0 * self.SMALL_SQUARE_SIZE, center_y),  # 第1个
@@ -164,12 +159,11 @@ class MapGraphicsView(QGraphicsView):
             rect_item.setZValue(0)
             self.scene.addItem(rect_item)
 
-            # 工程编号（放在矩形顶部）
+            # 工程编号
             text_item = QGraphicsTextItem(f"工程{pid}")
             text_item.setFont(font)
             text_item.setDefaultTextColor(Qt.black)
             text_rect = text_item.boundingRect()
-            # 矩形顶部 Y 坐标 = cy - BOX_HEIGHT/2，文字顶部距离矩形顶部 10 像素
             top_y = cy - self.BOX_HEIGHT / 2 + 10
             text_item.setPos(cx - text_rect.width() / 2, top_y)
             text_item.setZValue(0)
@@ -285,7 +279,7 @@ class MapGraphicsView(QGraphicsView):
                 text_rect = text.boundingRect()
                 text.setPos(cx - text_rect.width()/2, cy - text_rect.height()/2)
                 self.add_dynamic_item(text)
-            # 叠放区域标记（带颜色的小圆点 + "杯1","杯2","杯3"文字）
+            # 叠放区域标记
             zones = svc["叠放区域"]
             colors = svc["区域颜色"]  # 获取颜色列表
             if three_pid in PROJECT_POS:
@@ -406,7 +400,7 @@ class MapGraphicsView(QGraphicsView):
                 self.add_dynamic_item(text)
 
 
-# ==================== 主窗口（不变） ====================
+# ==================== 主窗口 ====================
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -488,7 +482,7 @@ class MainWindow(QMainWindow):
         four_cup_proj = random.choice([5, 6])
         three_cup_proj = 5 if four_cup_proj == 6 else 6
         stack_zones = random.sample(range(1, 5), 3)
-        # 分配颜色：两个红色，一个绿色（随机顺序）
+        # 分配颜色：两个红色，一个绿色
         colors = ["红", "红", "绿"]
         random.shuffle(colors)
 
