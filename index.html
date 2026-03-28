@@ -2,255 +2,759 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>道路工程抽签系统</title>
-  <link rel="icon" href="icon.ico" type="image/x-icon">
+  <title>道路工程抽签系统 | 专业版</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    /* 原来的变量与样式保持不变 */
-    :root{
-      --glass:rgba(17,30,54,.4);
-      --glass-border:rgba(255,255,255,.1);
-      --shadow:0 12px 40px rgba(0,0,0,.3);
-      --accent:#165DFF;
-      --accent2:#FFD700;
-      --bg:linear-gradient(135deg,#0A192F,#112240,#1A2E4F);
-      --font:#E6F1FF;
-      --highlight:#64FFDA;
+    /* === 原有 Liquid Glass 风格样式 === */
+    :root {
+      --glass: rgba(17, 30, 54, 0.4);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+      --accent: #165DFF;
+      --accent2: #FFD700;
+      --bg: linear-gradient(135deg, #0A192F, #112240, #1A2E4F);
+      --font: #E6F1FF;
+      --highlight: #64FFDA;
     }
-    *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",Helvetica,Arial,sans-serif}
-    body{background:var(--bg);min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:30px 20px;color:var(--font)}
-    #groupSelect{background:var(--glass);color:var(--font);border:1px solid var(--glass-border);border-radius:50px;padding:12px 28px;font-size:1rem;appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23E6F1FF' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 15px center;background-size:16px}
-    #groupSelect option{background:#0A192F;color:var(--font);border:none}
-    .task-label{position:absolute;top:-35px;left:50%;transform:translateX(-50%);background:var(--glass);backdrop-filter:blur(8px);border:1px solid var(--glass-border);padding:4px 10px;border-radius:12px;font-size:11px;color:var(--font);white-space:nowrap;z-index:3;box-shadow:var(--shadow)}
-    .container{width:100%;max-width:1440px;display:flex;flex-direction:column;gap:30px}
-    .glass-card{position:relative;padding:25px;border-radius:25px;background:var(--glass);backdrop-filter:blur(18px) saturate(180%);border:1px solid var(--glass-border);box-shadow:var(--shadow);overflow:hidden;transition:transform .3s,box-shadow .3s}
-    .glass-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.5)}
-    .glass-card::before{content:"";position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at var(--x,50%) var(--y,50%),rgba(22,93,255,.3),transparent 60%);opacity:var(--opacity,0);pointer-events:none;transition:opacity .25s}
-    .title{text-align:center;font-size:2.4rem;letter-spacing:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 10px rgba(22,93,255,.3)}
-    .controls{display:flex;gap:15px;flex-wrap:wrap;justify-content:center}
-    .controls select,.controls button{padding:12px 28px;font-size:1rem;border:none;border-radius:50px;background:var(--glass);color:var(--font);border:1px solid var(--glass-border);box-shadow:var(--shadow);cursor:pointer;transition:transform .2s,background .3s}
-    .controls button:hover{transform:scale(1.08);background:rgba(22,93,255,.15)}
-    .controls button.primary{background:var(--accent);color:#fff;font-weight:500;letter-spacing:1px}
-    .main{display:flex;gap:30px;flex-wrap:wrap}
-    .map-container{flex:1 1 650px;min-height:620px}
-    .map-canvas{position:relative;width:100%;height:100%;border-radius:20px;overflow:hidden;background:rgba(10,25,47,.5);border:1px solid rgba(255,255,255,.05)}
-    .project-point,.zone,.marker{position:absolute;display:flex;align-items:center;justify-content:center;font-weight:bold;border-radius:50%}
-    .project-point{width:60px;height:60px;background:linear-gradient(145deg,var(--accent),#0A192F);box-shadow:0 0 15px rgba(22,93,255,.5);z-index:2;font-size:14px;color:#fff}
-    .zone{width:47px;height:47px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);font-size:12px;border-radius:8px;color:var(--font)}
-    .marker{width:35px;height:35px;font-size:11px;animation:pulse 2.5s infinite;box-shadow:0 0 10px rgba(0,0,0,.5)}
-    @keyframes pulse{0%{transform:scale(1);opacity:.8}50%{transform:scale(1.15);opacity:1}100%{transform:scale(1);opacity:.8}}
-    .results-panel{flex:1 1 420px;display:flex;flex-direction:column;gap:30px}
-    .results-table{overflow:auto;max-height:320px;border-radius:15px}
-    table{width:100%;border-collapse:collapse}
-    th,td{padding:12px 15px;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.08)}
-    th{background:rgba(255,255,255,.1);font-weight:600;text-align:left}
-    .requirement-content{line-height:1.7;white-space:pre-wrap;font-size:15px;background:rgba(255,255,255,.05);padding:20px;border-radius:15px}
-    @media(max-width:900px){.main{flex-direction:column}}
-
-    /* === iOS 26 Liquid Glass 新增 === */
-    .glass-card.liquid{animation:breathe 6s ease-in-out infinite}
-    @keyframes breathe{
-      0%,100%{box-shadow:0 0 20px rgba(22,93,255,.25)}
-      50%{box-shadow:0 0 55px rgba(22,93,255,.55)}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", Helvetica, Arial, sans-serif;
     }
-    .glass-card.liquid::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      border-radius:inherit;
-      pointer-events:none;
-      -webkit-mask-image:conic-gradient(from var(--angle,0deg),transparent 0%,rgba(255,255,255,.4) 20%,transparent 40%);
-      mask-image:conic-gradient(from var(--angle,0deg),transparent 0%,rgba(255,255,255,.4) 20%,transparent 40%);
-      backdrop-filter:blur(36px) saturate(240%) hue-rotate(var(--hue,0deg));
-      transition:--angle .2s,--hue .2s;
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 30px 20px;
+      color: var(--font);
     }
-    @property --angle{
-      syntax:"<angle>";
-      inherits:false;
-      initial-value:0deg
+    .container {
+      width: 100%;
+      max-width: 1440px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
     }
-    @property --scale{
-      syntax:"<number>";
-      inherits:false;
-      initial-value:1
+    .glass-card {
+      position: relative;
+      padding: 25px;
+      border-radius: 25px;
+      background: var(--glass);
+      backdrop-filter: blur(18px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform .3s, box-shadow .3s;
     }
-    #bubbleLayer{position:fixed;inset:0;pointer-events:none;z-index:9999}
+    .glass-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    .glass-card::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(22, 93, 255, 0.3), transparent 60%);
+      opacity: var(--opacity, 0);
+      pointer-events: none;
+      transition: opacity .25s;
+    }
+    .glass-card.liquid {
+      animation: breathe 6s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%, 100% { box-shadow: 0 0 20px rgba(22, 93, 255, 0.25); }
+      50% { box-shadow: 0 0 55px rgba(22, 93, 255, 0.55); }
+    }
+    .glass-card.liquid::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      -webkit-mask-image: conic-gradient(from var(--angle, 0deg), transparent 0%, rgba(255, 255, 255, 0.4) 20%, transparent 40%);
+      mask-image: conic-gradient(from var(--angle, 0deg), transparent 0%, rgba(255, 255, 255, 0.4) 20%, transparent 40%);
+      backdrop-filter: blur(36px) saturate(240%) hue-rotate(var(--hue, 0deg));
+      transition: --angle .2s, --hue .2s;
+    }
+    @property --angle {
+      syntax: "<angle>";
+      inherits: false;
+      initial-value: 0deg;
+    }
+    @property --hue {
+      syntax: "<angle>";
+      inherits: false;
+      initial-value: 0deg;
+    }
+    .title {
+      text-align: center;
+      font-size: 2.4rem;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 10px rgba(22, 93, 255, 0.3);
+    }
+    .controls {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .controls select, .controls button {
+      padding: 12px 28px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 50px;
+      background: var(--glass);
+      color: var(--font);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform .2s, background .3s;
+    }
+    .controls button:hover {
+      transform: scale(1.08);
+      background: rgba(22, 93, 255, 0.15);
+    }
+    .controls button.primary {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+    .main {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+    .map-container {
+      flex: 1 1 650px;
+      min-height: 620px;
+    }
+    .map-canvas {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 20px;
+      overflow: hidden;
+      background: rgba(10, 25, 47, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      min-height: 600px;
+    }
+    /* 静态元素样式 */
+    .project-point, .zone, .marker, .color-block, .stack-marker {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      border-radius: 50%;
+      transition: all 0.1s ease;
+    }
+    .project-point {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(145deg, var(--accent), #0A192F);
+      box-shadow: 0 0 15px rgba(22, 93, 255, 0.5);
+      z-index: 20;
+      font-size: 14px;
+      color: #fff;
+    }
+    .zone {
+      width: 47px;
+      height: 47px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 12px;
+      border-radius: 8px;
+      color: var(--font);
+      z-index: 5;
+    }
+    .marker {
+      width: 50px;
+      height: 50px;
+      font-size: 13px;
+      animation: pulse 2s infinite;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+      border-radius: 50%;
+      z-index: 25;
+    }
+    .stack-marker {
+      width: 48px;
+      height: 48px;
+      font-size: 12px;
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(0,0,0,0.5);
+      z-index: 22;
+    }
+    .color-block {
+      width: 70px;
+      height: 70px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
+      color: white;
+      text-shadow: 0 0 2px black;
+      z-index: 21;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.8; }
+    }
+    .task-label {
+      position: absolute;
+      top: -38px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--glass);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--glass-border);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      color: var(--font);
+      white-space: nowrap;
+      z-index: 30;
+      box-shadow: var(--shadow);
+      pointer-events: none;
+    }
+    .results-panel {
+      flex: 1 1 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    .results-table {
+      overflow: auto;
+      max-height: 320px;
+      border-radius: 15px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 12px 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    th {
+      background: rgba(255, 255, 255, 0.1);
+      font-weight: 600;
+      text-align: left;
+    }
+    .requirement-content {
+      line-height: 1.7;
+      white-space: pre-wrap;
+      font-size: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      border-radius: 15px;
+    }
+    @media (max-width: 900px) {
+      .main { flex-direction: column; }
+    }
   </style>
 </head>
-
 <body>
-  <div class="container">
-    <div class="glass-card title">道路工程抽签系统</div>
+<div class="container">
+  <div class="glass-card title">道路工程抽签系统</div>
 
-    <div class="glass-card controls">
-      <select id="groupSelect" class="glass-select">
-        <option value="小学">小学</option>
-        <option value="初中">初中</option>
-        <option value="高中" selected>高中</option>
-      </select>
-      <button class="primary" id="drawBtn">开始抽签</button>
-      <button id="resetBtn">重置系统</button>
-      <button id="exportBtn">导出结果</button>
+  <div class="glass-card controls">
+    <select id="groupSelect" class="glass-select">
+      <option value="小学">小学</option>
+      <option value="初中">初中</option>
+      <option value="高中" selected>高中</option>
+    </select>
+    <button class="primary" id="drawBtn">开始抽签</button>
+    <button id="resetBtn">重置系统</button>
+    <button id="exportBtn">导出结果</button>
+  </div>
+
+  <div class="main">
+    <div class="glass-card map-container">
+      <div class="map-canvas" id="mapCanvas"></div>
     </div>
 
-    <div class="main">
-      <div class="glass-card map-container">
-        <div class="map-canvas" id="mapCanvas"></div>
+    <div class="glass-card results-panel">
+      <div class="results-table">
+        <table>
+          <thead>
+            <tr><th>任务</th><th>工程点</th><th>区域 / 细节</th></tr>
+          </thead>
+          <tbody id="resultsTbody"></tbody>
+        </table>
       </div>
-
-      <div class="glass-card results-panel">
-        <div class="results-table">
-          <table>
-            <thead>
-              <tr><th>任务</th><th>工程点</th><th>区域</th></tr>
-            </thead>
-            <tbody id="resultsTbody"></tbody>
-          </table>
-        </div>
-        <div class="requirement-content" id="requirementContent">
-抽签结果将在此显示
-请先选择组别并点击“开始抽签”
-        </div>
+      <div class="requirement-content" id="requirementContent">
+        抽签结果将在此显示<br>请先选择组别并点击“开始抽签”
       </div>
     </div>
   </div>
+</div>
+<canvas id="bubbleLayer" style="position:fixed; inset:0; pointer-events:none; z-index:9999;"></canvas>
 
-  <canvas id="bubbleLayer"></canvas>
+<script>
+  // ------------------------------ 地图坐标系统初始化 ---------------------------------
+  const mapCanvas = document.getElementById('mapCanvas');
+  const groupSelect = document.getElementById('groupSelect');
+  const drawBtn = document.getElementById('drawBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const exportBtn = document.getElementById('exportBtn');
+  const resultsTbody = document.getElementById('resultsTbody');
+  const requirementContent = document.getElementById('requirementContent');
 
-  <script>
-    /* ========== 原抽签逻辑（未改动） ========== */
-    const groupSelect=document.getElementById('groupSelect'),drawBtn=document.getElementById('drawBtn'),resetBtn=document.getElementById('resetBtn'),exportBtn=document.getElementById('exportBtn'),mapCanvas=document.getElementById('mapCanvas'),resultsTbody=document.getElementById('resultsTbody'),requirementContent=document.getElementById('requirementContent');
-    let currentGroup='高中',results={},projectPos={},zonePos={},projectElements={};
+  let currentGroup = '高中';
+  let lotteryData = {};          // 存储抽签结果详细数据
+  let projectPos = {};           // { pid: {x, y} }
+  let zonePos = {};              // { pid: { 1:{x,y}, 2:{x,y}, 3:{x,y}, 4:{x,y} } }
+  let projectElements = {};      // DOM 元素引用
 
-    function initMap(){
-      const rect=mapCanvas.getBoundingClientRect(),scaleX=rect.width/600,scaleY=rect.height/600;
-      const basePos=[[120,80],[300,80],[480,80],[120,260],[300,260],[480,260],[120,440],[300,440],[480,440]];
-      basePos.forEach((p,i)=>{
-        const idx=i+1,x=p[0]*scaleX,y=p[1]*scaleY;
-        projectPos[idx]={x,y};
-        const pp=document.createElement('div');pp.className='project-point';pp.dataset.id=idx;pp.style.left=`${x-30}px`;pp.style.top=`${y-30}px`;pp.textContent=`工程${idx}`;mapCanvas.appendChild(pp);projectElements[idx]=pp;zonePos[idx]={};
-        for(let z=1;z<=4;z++){
-          const zx=x+((z-1)%2)*50*scaleX-25*scaleX,zy=y+Math.floor((z-1)/2)*50*scaleY-25*scaleY;
-          zonePos[idx][z]={x:zx,y:zy};
-          const zd=document.createElement('div');zd.className='zone';zd.style.left=`${zx-22}px`;zd.style.top=`${zy-22}px`;zd.textContent=z;mapCanvas.appendChild(zd);
+  // 固定比例参考系 (原始 600x600 内布局)
+  const BASE_POINTS = [
+    [120,80], [300,80], [480,80],
+    [120,260], [300,260], [480,260],
+    [120,440], [300,440], [480,440]
+  ];
+
+  function updateMapScale() {
+    const rect = mapCanvas.getBoundingClientRect();
+    if (rect.width === 0) return;
+    const scaleX = rect.width / 600;
+    const scaleY = rect.height / 600;
+    for (let i = 1; i <= 9; i++) {
+      const [bx, by] = BASE_POINTS[i-1];
+      const x = bx * scaleX;
+      const y = by * scaleY;
+      if (projectPos[i]) {
+        projectPos[i].x = x;
+        projectPos[i].y = y;
+      } else {
+        projectPos[i] = { x, y };
+      }
+      // 更新区域坐标
+      if (!zonePos[i]) zonePos[i] = {};
+      for (let z = 1; z <= 4; z++) {
+        const offX = ((z-1) % 2) * 50 * scaleX - 25 * scaleX;
+        const offY = Math.floor((z-1)/2) * 50 * scaleY - 25 * scaleY;
+        const zx = x + offX;
+        const zy = y + offY;
+        zonePos[i][z] = { x: zx, y: zy };
+      }
+    }
+    // 更新静态元素位置（如果已存在）
+    for (let i = 1; i <= 9; i++) {
+      const projDiv = projectElements[i];
+      if (projDiv) {
+        projDiv.style.left = `${projectPos[i].x - 30}px`;
+        projDiv.style.top = `${projectPos[i].y - 30}px`;
+      }
+      // 更新四个区域框
+      for (let z = 1; z <= 4; z++) {
+        const zoneDiv = document.querySelector(`.zone[data-pid='${i}'][data-zone='${z}']`);
+        if (zoneDiv) {
+          zoneDiv.style.left = `${zonePos[i][z].x - 23.5}px`;
+          zoneDiv.style.top = `${zonePos[i][z].y - 23.5}px`;
         }
-      });
+      }
     }
-    const shuffle=a=>a.sort(()=>Math.random()-.5),rand=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
-    function generateDraw(){
-      let projects=[...Array(9)].map((_,i)=>i+1);projects=shuffle(projects);results={};
-      const t1p=projects.pop(),t1z=rand(1,4);
-      results['物料回收']={工程点:t1p,区域:t1z,坐标:zonePos[t1p][t1z],要求:['📦 物料回收任务',`📍 工程点：${t1p}`,`🗺️ 区域：${t1z}`,'📝 要求：将易拉罐摆放在指定区域的最近交叉线']};
-      const t2p=projects.pop(),t2zs=shuffle([1,2,3,4]).slice(0,3);
-      results['建设服务区']={工程点:t2p,区域:t2zs,坐标:t2zs.map(z=>zonePos[t2p][z]),要求:['🏗️ 建设服务区任务',`📍 工程点：${t2p}`,`🗺️ 区域：${t2zs.join(', ')}`,'📝 要求：在指定的三个区域分别平放1个纸杯，形成“品”字形']};
-      const t3p=projects.pop(),colors=['#FF0000','#87CEFA','#00FF00'];let colorOrder='';
-      if(currentGroup!=='小学'){const shuffled=shuffle([...colors]),names={'#FF0000':'红','#87CEFA':'蓝','#00FF00':'绿'};colorOrder=`🔢 叠放顺序（从下到上）：${shuffled.map(c=>names[c]).reverse().join(' → ')}`;}
-      results['搭建桥梁']={工程点:t3p,坐标:projectPos[t3p],要求:['🌉 搭建桥梁任务',`📍 工程点：${t3p}`,'📌 固定摆放位置：','🔵 1号位置 - 蓝色','🔴 2 - 3中间线 - 红色','🟢 4号位置 - 绿色',colorOrder||'🎓 小学组无顺序要求'],颜色顺序:currentGroup==='小学'?colors:shuffle([...colors])};
-      const t4p=projects.pop();const [cupZone,ballZone]=shuffle([1,2,3,4]);
-      results['建设加油站']={工程点:t4p,纸杯区域:cupZone,泡沫球区域:ballZone,坐标:[zonePos[t4p][cupZone],zonePos[t4p][ballZone]],要求:['⛽ 建设加油站任务',`📍 工程点：${t4p}`,`🥤 纸杯区域：${cupZone}`,`🎈 泡沫球区域：${ballZone}`,'📝 要求：将泡沫球放置在倒扣纸杯上']};
-    }
-    function updateDisplay(){
-      document.querySelectorAll('.marker,.task-label').forEach(m=>m.remove());
-      resultsTbody.innerHTML='';requirementContent.textContent='';
-      const colors={'物料回收':'#165DFF','建设服务区':'#64FFDA','搭建桥梁':'#FFD700','建设加油站':'#FF647C'};
-      Object.entries(results).forEach(([task,info])=>{
-        const tr=document.createElement('tr');tr.innerHTML=`<td>${task}</td><td>${info.工程点}</td><td>${Array.isArray(info.区域)?info.区域.join(', '):info.区域||'-'}</td>`;resultsTbody.appendChild(tr);requirementContent.textContent+=info.要求.join('\n')+'\n\n';
-        const label=document.createElement('div');label.className='task-label';label.textContent=task;projectElements[info.工程点].appendChild(label);
-        if(task==='物料回收')createMarker(info.坐标,'回收',colors[task],35);
-        else if(task==='建设服务区'){createMarker(projectPos[info.工程点],'服务区',colors[task],50);info.坐标.forEach((c,i)=>createMarker(c,`纸杯${i+1}`,colors[task],35));}
-        else if(task==='搭建桥梁'){createMarker(projectPos[info.工程点],'桥梁',colors[task],50);const base=projectPos[info.工程点];info.颜色顺序.forEach((color,i)=>{const m=document.createElement('div');m.className='marker';m.style.backgroundColor=color;m.style.left=`${base.x+60}px`;m.style.top=`${base.y-35+i*25}px`;m.style.width=m.style.height='20px';m.style.borderRadius='3px';m.textContent=['红','蓝','绿'][['#FF0000','#87CEFA','#00FF00'].indexOf(color)];m.style.fontSize='9px';mapCanvas.appendChild(m)})}
-        else if(task==='建设加油站'){createMarker(info.坐标[0],'纸杯',colors[task],30);createMarker(info.坐标[1],'泡沫球','#FFD54F',40);}
-      });
-    }
-    function createMarker(pos,text,color,size=30){
-      const m=document.createElement('div');m.className='marker';m.style.backgroundColor=color;m.style.left=`${pos.x-size/2}px`;m.style.top=`${pos.y-size/2}px`;m.style.width=m.style.height=`${size}px`;m.textContent=text;mapCanvas.appendChild(m);
-    }
-    function resetSystem(){
-      results={};resultsTbody.innerHTML='';requirementContent.textContent='抽签结果将在此显示\n请先选择组别并点击“开始抽签”';document.querySelectorAll('.marker,.task-label').forEach(m=>m.remove());
-    }
-    function exportResults(){
-      if(Object.keys(results).length===0){alert('请先抽签');return;}
-      let txt='道路工程抽签结果\n\n';
-      Object.entries(results).forEach(([task,info])=>{
-        txt+=`任务名称：${task}\n工程点：${info.工程点}\n`;
-        if(Array.isArray(info.区域))txt+=`区域：${info.区域.join(', ')}\n`;
-        else if(info.纸杯区域&&info.泡沫球区域){txt+=`纸杯区域：${info.纸杯区域}\n泡沫球区域：${info.泡沫球区域}\n`;}
-        else txt+=`区域：${info.区域}\n`;
-        txt+=`要求：\n${info.要求.map(r=>'    '+r).join('\n')}\n\n`;
-      });
-      const blob=new Blob([txt],{type:'text/plain'}),url=URL.createObjectURL(blob),a=document.createElement('a');
-      a.href=url;a.download='道路工程抽签结果.txt';a.click();URL.revokeObjectURL(url);
-    }
-    /* 事件绑定 */
-    groupSelect.addEventListener('change',e=>currentGroup=e.target.value);
-    drawBtn.addEventListener('click',()=>{generateDraw();updateDisplay()});
-    resetBtn.addEventListener('click',resetSystem);
-    exportBtn.addEventListener('click',exportResults);
+  }
 
-    /* === Liquid Glass 动态交互 === */
-    document.querySelectorAll('.glass-card').forEach(card=>{
-      card.classList.add('liquid');
-      card.addEventListener('mousemove',e=>{
-        const r=card.getBoundingClientRect();
-        const x=((e.clientX-r.left)/r.width)*100;
-        const y=((e.clientY-r.top)/r.height)*100;
-        card.style.setProperty('--x',`${x}%`);
-        card.style.setProperty('--y',`${y}%`);
-        card.style.setProperty('--opacity','1');
-        /* 折射角度 */
-        const dx=e.clientX-r.left-r.width/2;
-        const dy=e.clientY-r.top-r.height/2;
-        const angle=Math.atan2(dy,dx)*180/Math.PI;
-        card.style.setProperty('--angle',`${angle}deg`);
-        card.style.setProperty('--hue',`${angle/6}deg`);
-      });
-      card.addEventListener('mouseleave',()=>card.style.setProperty('--opacity','0'));
+  function initMap() {
+    mapCanvas.innerHTML = '';
+    updateMapScale();
+    for (let i = 1; i <= 9; i++) {
+      const { x, y } = projectPos[i];
+      const pp = document.createElement('div');
+      pp.className = 'project-point';
+      pp.dataset.id = i;
+      pp.textContent = `工程${i}`;
+      pp.style.left = `${x - 30}px`;
+      pp.style.top = `${y - 30}px`;
+      mapCanvas.appendChild(pp);
+      projectElements[i] = pp;
 
-      /* 弹性拖拽 */
-      let ox=0,oy=0,dx=0,dy=0;
-      card.addEventListener('pointerdown',e=>{
-        const r=card.getBoundingClientRect();
-        ox=e.clientX-r.left-r.width/2;
-        oy=e.clientY-r.top-r.height/2;
-      });
-      card.addEventListener('pointermove',e=>{
-        if(!e.buttons)return;
-        const r=card.getBoundingClientRect();
-        dx=e.clientX-r.left-r.width/2-ox;
-        dy=e.clientY-r.top-r.height/2-oy;
-        const d=Math.hypot(dx,dy);
-        if(d<1){card.style.clipPath='';return}
-        const p=`polygon(
-          ${-dx*0.3}px ${-dy*0.3}px,
-          calc(100% - ${dx*0.3}px) calc(0% - ${dy*0.3}px),
-          calc(100% + ${dx*0.3}px) calc(100% + ${dy*0.3}px),
-          calc(0% + ${dx*0.3}px) calc(100% + ${dy*0.3}px))`;
-        card.style.clipPath=p;
-      });
-      card.addEventListener('pointerup',()=>{
-        card.style.transition='clip-path .35s cubic-bezier(.25,1.3,.5,1)';
-        card.style.clipPath='';
-        setTimeout(()=>card.style.transition='',350);
-      });
-    });
-
-    /* 微粒子漂浮 */
-    const canvas=document.getElementById('bubbleLayer');
-    const ctx=canvas.getContext('2d');
-    let W,H,bubbles=[];
-    function resize(){W=canvas.width=innerWidth;H=canvas.height=innerHeight;}
-    window.addEventListener('resize',resize);resize();
-    class Bubble{
-      constructor(x,y){this.x=x;this.y=y;this.r=Math.random()*2+1.4;this.vx=(Math.random()-0.5)*.3;this.vy=-Math.random()*.5-.3;this.alpha=Math.random()*.4+.2;}
-      update(){this.x+=this.vx+Math.sin(Date.now()/3000+this.x)*.2;this.y+=this.vy;if(this.y<-20){this.y=H+20;this.x=Math.random()*W}}
-      draw(){ctx.save();ctx.globalAlpha=this.alpha;ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.7)';ctx.fill();ctx.restore();}
+      for (let z = 1; z <= 4; z++) {
+        const { x: zx, y: zy } = zonePos[i][z];
+        const zd = document.createElement('div');
+        zd.className = 'zone';
+        zd.setAttribute('data-pid', i);
+        zd.setAttribute('data-zone', z);
+        zd.style.left = `${zx - 23.5}px`;
+        zd.style.top = `${zy - 23.5}px`;
+        zd.textContent = z;
+        mapCanvas.appendChild(zd);
+      }
     }
-    for(let i=0;i<60;i++)bubbles.push(new Bubble(Math.random()*W,Math.random()*H));
-    function animate(){ctx.clearRect(0,0,W,H);bubbles.forEach(b=>{b.update();b.draw()});requestAnimationFrame(animate);}
-    animate();
+  }
 
-    /* 启动 */
+  window.addEventListener('resize', () => {
     initMap();
-  </script>
+    if (lotteryData && Object.keys(lotteryData).length) updateDisplay();
+  });
+
+  // ------------------------------ 核心抽签逻辑 (完全匹配 Python 规则) ---------------------------------
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function generateLottery() {
+    // 可用工程点 1-9，工程5和6预留给服务区特殊用途
+    let available = [1,2,3,4,5,6,7,8,9];
+    available = shuffle(available);
+    // 建设服务区独占 5 和 6 (一个放4个纸杯，一个放3个纸杯并叠放)
+    const fourCupProj = 5;      // 固定 5号工程放4个纸杯
+    const threeCupProj = 6;     // 6号工程放3个纸杯叠放
+    available = available.filter(p => p !== 5 && p !== 6);
+
+    // 物料回收
+    const recProj = available.pop();
+    const recZone = randomInt(1, 4);
+
+    // 搭建桥梁
+    const bridgeProj = available.pop();
+    const colorOrder = shuffle(['红', '蓝', '绿']);
+
+    // 建设加油站
+    const stationProj = available.pop();
+    let cupZone = randomInt(1,4);
+    let ballZone = randomInt(1,4);
+    while (ballZone === cupZone) ballZone = randomInt(1,4);
+
+    // 建设服务区 - 叠放区域三个不同区域 (随机3个不同区域 1-4)
+    const stackZones = shuffle([1,2,3,4]).slice(0,3);
+    // 颜色顺序：两个红色，一个绿色，随机排列 (从下至上为数组顺序，但实际显示用)
+    let stackColors = ['红', '红', '绿'];
+    stackColors = shuffle(stackColors);
+
+    // 根据组别调整细节描述
+    let serviceDesc = '';
+    let bridgeDesc = '';
+    if (currentGroup === '小学') {
+      serviceDesc = '小学组只需叠好两个红色纸杯（从上往下看前两个区域为红色）。';
+      bridgeDesc = '小学组只需堆叠两个原料，颜色无顺序要求（只需任意两个颜色块）。';
+    } else {
+      serviceDesc = '初高中组需按颜色顺序（从下至上）叠放：' + stackColors.join(' → ');
+      bridgeDesc = '初高中组需按颜色顺序（从下至上）堆叠：' + colorOrder.join(' → ');
+    }
+
+    lotteryData = {
+      "物料回收": {
+        工程点: recProj,
+        区域: recZone,
+        坐标: zonePos[recProj][recZone],
+        要求: ['📦 物料回收任务', `📍 工程点：${recProj}`, `🗺️ 区域：${recZone}`, '📝 要求：将易拉罐摆放在指定区域的最近交叉线。']
+      },
+      "建设服务区": {
+        工程点_4杯: fourCupProj,
+        工程点_3杯: threeCupProj,
+        叠放区域: stackZones,
+        区域颜色: stackColors,      // 颜色数组对应叠放区域的顺序（按区域顺序）
+        要求: ['🏗️ 建设服务区任务', `📍 4个纸杯位置：工程${fourCupProj}`, `📍 3个纸杯位置：工程${threeCupProj}`, `🗺️ 叠放区域：${stackZones.join(', ')}`, `🎨 颜色顺序（从下至上）：${stackColors.join(' → ')}`, serviceDesc]
+      },
+      "搭建桥梁": {
+        工程点: bridgeProj,
+        颜色顺序: colorOrder,
+        坐标: projectPos[bridgeProj],
+        要求: ['🌉 搭建桥梁任务', `📍 工程点：${bridgeProj}`, `🔢 颜色顺序（从下至上）：${colorOrder.join(' → ')}`, bridgeDesc, '📍 摆放位置参考地图右侧彩色方块（自下而上对应顺序）']
+      },
+      "建设加油站": {
+        工程点: stationProj,
+        纸杯区域: cupZone,
+        泡沫球区域: ballZone,
+        坐标: [zonePos[stationProj][cupZone], zonePos[stationProj][ballZone]],
+        要求: ['⛽ 建设加油站任务', `📍 工程点：${stationProj}`, `🥤 纸杯区域：${cupZone}`, `🎈 泡沫球区域：${ballZone}`, '📝 要求：将泡沫球放置在倒扣纸杯上。']
+      }
+    };
+  }
+
+  // ------------------------------ 动态绘制地图标记 (完全按Python视觉效果) ---------------------------------
+  function clearDynamicMarkers() {
+    const toRemove = mapCanvas.querySelectorAll('.marker, .task-label, .color-block, .stack-marker');
+    toRemove.forEach(el => el.remove());
+  }
+
+  function createMarker(pos, text, bgColor, size = 50, textColor = 'white') {
+    const div = document.createElement('div');
+    div.className = 'marker';
+    div.style.backgroundColor = bgColor;
+    div.style.left = `${pos.x - size/2}px`;
+    div.style.top = `${pos.y - size/2}px`;
+    div.style.width = `${size}px`;
+    div.style.height = `${size}px`;
+    div.style.borderRadius = '50%';
+    div.textContent = text;
+    div.style.color = textColor;
+    div.style.fontWeight = 'bold';
+    div.style.display = 'flex';
+    div.style.alignItems = 'center';
+    div.style.justifyContent = 'center';
+    mapCanvas.appendChild(div);
+    return div;
+  }
+
+  function createStackMarker(pos, text, bgColor, size = 48) {
+    const div = document.createElement('div');
+    div.className = 'stack-marker';
+    div.style.backgroundColor = bgColor;
+    div.style.left = `${pos.x - size/2}px`;
+    div.style.top = `${pos.y - size/2}px`;
+    div.style.width = `${size}px`;
+    div.style.height = `${size}px`;
+    div.textContent = text;
+    div.style.color = '#fff';
+    div.style.textShadow = '0 0 2px black';
+    mapCanvas.appendChild(div);
+    return div;
+  }
+
+  function createColorBlock(baseX, baseY, color, orderText, index, total) {
+    const blockWidth = 70;
+    const blockHeight = 70;
+    const startX = baseX + 130;
+    const startY = baseY - (total * blockHeight)/2 + index * blockHeight;
+    const div = document.createElement('div');
+    div.className = 'color-block';
+    div.style.left = `${startX}px`;
+    div.style.top = `${startY}px`;
+    div.style.width = `${blockWidth}px`;
+    div.style.height = `${blockHeight}px`;
+    div.style.backgroundColor = color;
+    div.style.borderRadius = '12px';
+    div.style.border = '1px solid rgba(255,255,255,0.3)';
+    div.style.display = 'flex';
+    div.style.alignItems = 'center';
+    div.style.justifyContent = 'center';
+    div.textContent = orderText;
+    div.style.fontSize = '18px';
+    div.style.fontWeight = 'bold';
+    mapCanvas.appendChild(div);
+  }
+
+  function updateDisplay() {
+    clearDynamicMarkers();
+    if (!lotteryData || Object.keys(lotteryData).length === 0) return;
+
+    resultsTbody.innerHTML = '';
+    let reqText = '';
+
+    // 定义任务颜色
+    const taskColors = {
+      "物料回收": "#165DFF",
+      "建设服务区": "#64FFDA",
+      "搭建桥梁": "#FFD700",
+      "建设加油站": "#FF647C"
+    };
+
+    for (const [task, info] of Object.entries(lotteryData)) {
+      // 表格行
+      const tr = document.createElement('tr');
+      let projText = '';
+      let zoneDetail = '';
+      if (task === "建设服务区") {
+        projText = `工程${info.工程点_4杯} / 工程${info.工程点_3杯}`;
+        zoneDetail = `叠放区域：${info.叠放区域.join(', ')} 颜色顺序:${info.区域颜色.join('→')}`;
+      } else if (task === "搭建桥梁") {
+        projText = `${info.工程点}`;
+        zoneDetail = `颜色顺序：${info.颜色顺序.join(' → ')}`;
+      } else if (task === "建设加油站") {
+        projText = `${info.工程点}`;
+        zoneDetail = `杯区域${info.纸杯区域} 球区域${info.泡沫球区域}`;
+      } else {
+        projText = `${info.工程点}`;
+        zoneDetail = `区域${info.区域}`;
+      }
+      tr.innerHTML = `<td>${task}</td><td>${projText}</td><td>${zoneDetail}</td>`;
+      resultsTbody.appendChild(tr);
+      reqText += info.要求.join('\n') + '\n\n';
+
+      // 添加任务标签（位于工程点上方）
+      let targetProj = null;
+      if (task === "建设服务区") {
+        targetProj = info.工程点_4杯;
+      } else {
+        targetProj = info.工程点;
+      }
+      const projDiv = projectElements[targetProj];
+      if (projDiv) {
+        const label = document.createElement('div');
+        label.className = 'task-label';
+        label.textContent = task;
+        projDiv.appendChild(label);
+      }
+
+      // 绘制地图标记
+      if (task === "物料回收") {
+        createMarker(info.坐标, '回', taskColors[task], 48, 'white');
+      }
+      else if (task === "建设服务区") {
+        // 在4杯工程点绘制 “服”
+        createMarker(projectPos[info.工程点_4杯], '服', taskColors[task], 58, 'white');
+        // 在3杯工程点绘制 “叠”
+        createMarker(projectPos[info.工程点_3杯], '叠', '#AAAAAA', 58, 'white');
+        // 在叠放区域的三个位置绘制彩色小圆点 (区域颜色根据 stackColors)
+        const zones = info.叠放区域;
+        const colors = info.区域颜色;
+        const targetProj3 = info.工程点_3杯;
+        for (let i = 0; i < zones.length; i++) {
+          const zoneIdx = zones[i];
+          const zoneColor = colors[i];
+          const fillColor = zoneColor === '红' ? '#FF3333' : '#33FF33';
+          const pos = zonePos[targetProj3][zoneIdx];
+          const markerDiv = createStackMarker(pos, '杯', fillColor, 46);
+          markerDiv.style.animation = 'pulse 1.8s infinite';
+          // 加文字 杯
+          markerDiv.textContent = '杯';
+          markerDiv.style.fontSize = '14px';
+        }
+      }
+      else if (task === "搭建桥梁") {
+        createMarker(projectPos[info.工程点], '桥', taskColors[task], 56, 'white');
+        // 绘制右侧颜色顺序方块 (从下至上)
+        const basePos = projectPos[info.工程点];
+        const colorsSeq = info.颜色顺序;
+        const colorMap = { '红': '#FF4444', '蓝': '#3399FF', '绿': '#44FF44' };
+        // 小学组只显示两个方块（简单处理显示两个颜色即可，但逻辑上小学任意两个）
+        let seq = colorsSeq;
+        if (currentGroup === '小学') seq = colorsSeq.slice(0,2);
+        for (let i = 0; i < seq.length; i++) {
+          const colName = seq[i];
+          const colorHex = colorMap[colName];
+          createColorBlock(basePos.x, basePos.y, colorHex, colName, i, seq.length);
+        }
+      }
+      else if (task === "建设加油站") {
+        createMarker(info.坐标[0], '杯', '#FFA500', 44, 'black');
+        createMarker(info.坐标[1], '球', '#FFD966', 44, 'black');
+      }
+    }
+    requirementContent.textContent = reqText || '抽签结果已生成，请查看上方表格和地图标记。';
+  }
+
+  // ------------------------------ 重置 & 导出 ---------------------------------
+  function resetSystem() {
+    lotteryData = {};
+    clearDynamicMarkers();
+    resultsTbody.innerHTML = '';
+    requirementContent.textContent = '抽签结果将在此显示\n请先选择组别并点击“开始抽签”';
+  }
+
+  function exportResults() {
+    if (Object.keys(lotteryData).length === 0) {
+      alert('请先抽签');
+      return;
+    }
+    let txt = `道路工程抽签结果\n组别：${currentGroup}\n\n`;
+    for (const [task, info] of Object.entries(lotteryData)) {
+      txt += `【${task}】\n`;
+      if (task === "物料回收") {
+        txt += `工程点：${info.工程点}，区域：${info.区域}\n要求：${info.要求.slice(3).join('')}\n\n`;
+      } else if (task === "建设服务区") {
+        txt += `4个纸杯位置：工程${info.工程点_4杯}\n3个纸杯位置：工程${info.工程点_3杯}\n叠放区域：${info.叠放区域.join(', ')}\n颜色顺序（从下至上）：${info.区域颜色.join(' → ')}\n${info.要求.slice(5).join(' ')}\n\n`;
+      } else if (task === "搭建桥梁") {
+        txt += `工程点：${info.工程点}\n颜色顺序（从下至上）：${info.颜色顺序.join(' → ')}\n${info.要求.slice(2,4).join(' ')}\n\n`;
+      } else if (task === "建设加油站") {
+        txt += `工程点：${info.工程点}\n纸杯区域：${info.纸杯区域}，泡沫球区域：${info.泡沫球区域}\n要求：${info.要求.slice(4).join('')}\n\n`;
+      }
+    }
+    const blob = new Blob([txt], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '道路工程抽签结果.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // 抽签入口
+  function performDraw() {
+    generateLottery();
+    updateDisplay();
+  }
+
+  // ------------------------------ 事件绑定 & 动态玻璃效果 ---------------------------------
+  groupSelect.addEventListener('change', (e) => { currentGroup = e.target.value; });
+  drawBtn.addEventListener('click', performDraw);
+  resetBtn.addEventListener('click', resetSystem);
+  exportBtn.addEventListener('click', exportResults);
+
+  // Liquid Glass 动态效果（保留原有效果）
+  document.querySelectorAll('.glass-card').forEach(card => {
+    card.classList.add('liquid');
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width) * 100;
+      const y = ((e.clientY - r.top) / r.height) * 100;
+      card.style.setProperty('--x', `${x}%`);
+      card.style.setProperty('--y', `${y}%`);
+      card.style.setProperty('--opacity', '1');
+      const dx = e.clientX - r.left - r.width / 2;
+      const dy = e.clientY - r.top - r.height / 2;
+      const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+      card.style.setProperty('--angle', `${angle}deg`);
+      card.style.setProperty('--hue', `${angle / 6}deg`);
+    });
+    card.addEventListener('mouseleave', () => card.style.setProperty('--opacity', '0'));
+  });
+
+  // 微粒子漂浮背景
+  const canvas = document.getElementById('bubbleLayer');
+  const ctx = canvas.getContext('2d');
+  let W, H, bubbles = [];
+  function resizeCanvas() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+  class Bubble {
+    constructor() {
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.r = Math.random() * 2 + 1.2;
+      this.vx = (Math.random() - 0.5) * 0.2;
+      this.vy = -Math.random() * 0.4 - 0.2;
+      this.alpha = Math.random() * 0.4 + 0.2;
+    }
+    update() {
+      this.x += this.vx + Math.sin(Date.now() / 3000 + this.x) * 0.1;
+      this.y += this.vy;
+      if (this.y < -20) { this.y = H + 20; this.x = Math.random() * W; }
+    }
+    draw() {
+      ctx.save();
+      ctx.globalAlpha = this.alpha;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+  for (let i = 0; i < 70; i++) bubbles.push(new Bubble());
+  function animateBubbles() {
+    ctx.clearRect(0, 0, W, H);
+    bubbles.forEach(b => { b.update(); b.draw(); });
+    requestAnimationFrame(animateBubbles);
+  }
+  animateBubbles();
+
+  // 初始化地图
+  initMap();
+</script>
 </body>
 </html>
