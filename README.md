@@ -1,6 +1,7 @@
 # 道路工程抽签系统
 
-[点击下载地图文件“道路工程训练地图新.tif”](https://1drv.ms/i/c/98019b7fcbdd4704/IQDFb-7AHimAQbaoA8E4DwK_Af6Zjyx3aP_C9vxrgdXpa2g?e=WJNbxS)
+### 地图又改回[2025版](https://1drv.ms/i/c/98019b7fcbdd4704/IQAz_OF5RrsATqCZfvRcBjtqASta__yI0sb2xAJrFBrGsO0?e=7KD0wd)的了，点击这行的蓝色文字下载
+### [点击下载地图文件“道路工程训练地图新.tif”(已废弃)](https://1drv.ms/i/c/98019b7fcbdd4704/IQDFb-7AHimAQbaoA8E4DwK_Af6Zjyx3aP_C9vxrgdXpa2g?e=WJNbxS)
 ## 简介
 
 道路工程抽签系统是一个基于 Python 和 PyQt5 开发的桌面应用程序，用于模拟道路工程比赛中的抽签过程。系统支持小学、初中、高中三个组别，可随机分配四个任务（物料回收、建设服务区、搭建桥梁、建设加油站）到不同的工程点和区域，并以图形化的方式展示在地图上。此外，用户还可以重置抽签结果，并将结果导出到桌面的文本文件中。
@@ -18,7 +19,7 @@
 
 ### 环境要求
 
-- Python >= 3.8.6
+- Python >= 3.11.7
 - PyQt5 == 5.15.11
 
 ### 运行步骤
@@ -28,17 +29,17 @@
    pip install PyQt5==5.15.11
    ```
 2. 将项目所有文件放在同一目录下，包括：
-   - 主程序文件（例如 `main_v2.0.1.py`）
-   - 地图图片文件（默认名称为 `道路工程训练地图新.tif`）
+   - 主程序文件（例如 `main_v2.2.0.py`）
+   - 地图图片文件（默认名称为 `工程道路.bmp`）
 3. 打开命令行终端，切换到该目录。
 4. 运行以下命令启动程序：
    ```bash
-   python main_v2.0.1.py
+   python main_v2.2.0.py
    ```
 
 ## 使用方法
 
-1. **启动程序**：运行 `main_v2.0.1.py` 后，程序窗口将打开。
+1. **启动程序**：运行 `main_v2.2.0.py` 后，程序窗口将打开。
 2. **选择组别**：在控制面板的下拉菜单中选择要进行抽签的组别（小学、初中、高中）。
 3. **开始抽签**：点击“开始抽签”按钮，系统会自动随机生成任务分配，并在左侧地图和右侧表格中显示结果。
 4. **查看结果**：
@@ -53,11 +54,11 @@
 - **`main.py`**：主程序文件，包含：
   - `MapGraphicsView` 类：地图视图，负责加载背景图片、绘制静态元素（工程矩形、小方格、固定任务点）以及动态标记抽签结果。
   - `MainWindow` 类：主窗口，负责创建界面、处理用户交互、执行抽签逻辑、更新界面和导出结果。
-- **[`道路工程训练地图新.tif`](https://1drv.ms/i/c/98019b7fcbdd4704/IQDFb-7AHimAQbaoA8E4DwK_Af6Zjyx3aP_C9vxrgdXpa2g?e=WJNbxS)**：背景地图图片文件（需要与程序放在同一目录下）。
+- **[`工程道路.bmp`](https://1drv.ms/i/c/98019b7fcbdd4704/IQAz_OF5RrsATqCZfvRcBjtqASta__yI0sb2xAJrFBrGsO0?e=7KD0wd)**：背景地图图片文件（需要与程序放在同一目录下）。
 
 ## 注意事项
 
-- 确保地图图片文件（[`道路工程训练地图新.tif`](https://1drv.ms/i/c/98019b7fcbdd4704/IQDFb-7AHimAQbaoA8E4DwK_Af6Zjyx3aP_C9vxrgdXpa2g?e=WJNbxS)）与程序在同一目录下，否则背景将显示空白，但仍可正常抽签。
+- 确保地图图片文件（[`工程道路.bmp`](https://1drv.ms/i/c/98019b7fcbdd4704/IQAz_OF5RrsATqCZfvRcBjtqASta__yI0sb2xAJrFBrGsO0?e=7KD0wd)）与程序在同一目录下，否则背景将显示空白，但仍可正常抽签。
 - 程序在运行时会在临时目录创建一个临时图标文件，并在退出时自动删除，无需手动处理。
 - 导出的结果文件会覆盖桌面上已有的同名文件，请谨慎操作。
 - 由于地图尺寸较大，程序会根据窗口大小自动缩放地图，确保最佳显示效果。
